@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Молекулярна Лабораторія - Природничі науки (5 клас)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border: #334155;
+            --success: #22c55e;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 { margin: 0 0 5px 0; color: var(--accent); font-size: 1.8rem; }
+        p.subtitle { color: #94a3b8; margin: 0; font-size: 0.95rem; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 960px;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h2 { font-size: 1.2rem; margin-top: 0; border-bottom: 2px solid var(--border); padding-bottom: 8px; color: #e2e8f0; }
+
+        .atom-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        @media (min-width: 600px) {
+            .atom-grid { grid-template-columns: repeat(5, 1fr); }
+        }
+
+        .atom-btn {
+            background-color: #334155;
+            border: 2px solid var(--border);
+            color: white;
+            padding: 10px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .atom-btn:hover { background-color: var(--accent); color: #0f172a; border-color: var(--accent); }
+        .atom-btn:active { transform: scale(0.95); }
+
+        .workbench {
+            background-color: #0f172a;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Атомы с пропорциональными размерами */
+        .atom-ball {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .atom-H  { width: 30px; height: 30px; font-size: 0.75rem; background-color: #ef4444; } 
+        .atom-O  { width: 36px; height: 36px; font-size: 0.85rem; background-color: #0ea5e9; color: #0f172a; } 
+        .atom-N  { width: 37px; height: 37px; font-size: 0.85rem; background-color: #3b82f6; } 
+        .atom-C  { width: 38px; height: 38px; font-size: 0.9rem;  background-color: #475569; } 
+        .atom-S  { width: 40px; height: 40px; font-size: 0.9rem;  background-color: #eab308; color: #0f172a; } 
+        .atom-P  { width: 41px; height: 41px; font-size: 0.9rem;  background-color: #f97316; } 
+        .atom-Cl { width: 43px; height: 43px; font-size: 0.95rem; background-color: #10b981; } 
+        .atom-Fe { width: 45px; height: 45px; font-size: 0.95rem; background-color: #64748b; } 
+        .atom-Na { width: 46px; height: 46px; font-size: 0.95rem; background-color: #8b5cf6; } 
+        /* Кальций: очень светлый серо-меловой цвет */
+        .atom-Ca { width: 48px; height: 48px; font-size: 1rem;    background-color: #cbd5e1; color: #0f172a; } 
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .action-btn {
+            flex: 1;
+            background-color: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .action-btn:hover { background-color: var(--accent-hover); }
+        .action-btn:active { transform: scale(0.98); }
+
+        .clear-btn { background-color: #ef4444; color: white; }
+        .clear-btn:hover { background-color: #dc2626; }
+
+        .preset-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .preset-item {
+            background-color: #334155;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+        .preset-item:hover { background-color: #475569; }
+
+        .result-box {
+            margin-top: 15px;
+            background-color: #0f172a;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .prop-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: 10px;
+            font-size: 0.92rem;
+            border-bottom: 1px dotted #334155;
+            padding-bottom: 6px;
+        }
+        .prop-row:last-child { border-bottom: none; }
+        .prop-name { color: #94a3b8; font-weight: 500; }
+        .prop-val { font-weight: bold; color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧪 Молекулярна Лабораторія</h1>
+        <p class="subtitle">Природничі науки (5 клас) — дослідження 10 елементів та реальних молекул</p>
+    </header>
+
+    <div class="container">
+        <!-- Конструктор -->
+        <div class="panel">
+            <h2>1. Конструктор молекул (10 елементів)</h2>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0;">Обери атоми у правильному порядку:</p>
+            
+            <div class="atom-grid">
+                <button type="button" class="atom-btn" onclick="addAtom('H')">H (Водень)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('O')">O (Кисень)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('N')">N (Азот)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('C')">C (Вуглець)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('S')">S (Сера)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('P')">P (Фосфор)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('Cl')">Cl (Хлор)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('Fe')">Fe (Залізо)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('Na')">Na (Натрій)</button>
+                <button type="button" class="atom-btn" onclick="addAtom('Ca')">Ca (Кальцій)</button>
+            </div>
+
+            <div class="workbench" id="workbench">
+                <span style="color: #64748b;">Робоча зона порожня...</span>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="action-btn" onclick="checkSubstance()">Дослідити речовину</button>
+                <button type="button" class="action-btn clear-btn" onclick="clearWorkbench()">Скинути</button>
+            </div>
+
+            <h3 style="font-size: 0.95rem; margin-top: 18px; margin-bottom: 8px; color: #cbd5e1;">Готові молекули (швидкий вибір):</h3>
+            <div class="preset-list">
+                <div class="preset-item" onclick="loadPreset(['N', 'N'])">
+                    <span>Азот (N₂)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-N" style="width:18px;height:18px;font-size:0.55rem;">N</span>
+                        <span class="atom-ball atom-N" style="width:18px;height:18px;font-size:0.55rem;">N</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['O', 'O'])">
+                    <span>Кисень (O₂)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['O', 'O', 'O'])">
+                    <span>Озон (O₃)</span>
+                    <span style="display:flex; gap:3px; align-items:center;">
+                        <span class="atom-ball atom-O" style="width:16px;height:16px;font-size:0.5rem;">O</span>
+                        <span class="atom-ball atom-O" style="width:16px;height:16px;font-size:0.5rem;">O</span>
+                        <span class="atom-ball atom-O" style="width:16px;height:16px;font-size:0.5rem;">O</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['H', 'H'])">
+                    <span>Водень (H₂)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-H" style="width:16px;height:16px;font-size:0.5rem;">H</span>
+                        <span class="atom-ball atom-H" style="width:16px;height:16px;font-size:0.5rem;">H</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['H', 'O', 'H'])">
+                    <span>Вода (H₂O)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-H" style="width:16px;height:16px;font-size:0.5rem;">H</span>
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                        <span class="atom-ball atom-H" style="width:16px;height:16px;font-size:0.5rem;">H</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['H', 'O', 'O', 'H'])">
+                    <span>Перекись водню (H₂O₂)</span>
+                    <span style="display:flex; gap:3px; align-items:center;">
+                        <span class="atom-ball atom-H" style="width:15px;height:15px;font-size:0.45rem;">H</span>
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                        <span class="atom-ball atom-H" style="width:15px;height:15px;font-size:0.45rem;">H</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['C', 'H', 'H', 'H', 'H'])">
+                    <span>Метан (CH₄)</span>
+                    <span style="display:flex; gap:2px; align-items:center;">
+                        <span class="atom-ball atom-C" style="width:18px;height:18px;font-size:0.55rem;">C</span>
+                        <span class="atom-ball atom-H" style="width:14px;height:14px;font-size:0.4rem;">H</span>
+                        <span class="atom-ball atom-H" style="width:14px;height:14px;font-size:0.4rem;">H</span>
+                        <span class="atom-ball atom-H" style="width:14px;height:14px;font-size:0.4rem;">H</span>
+                        <span class="atom-ball atom-H" style="width:14px;height:14px;font-size:0.4rem;">H</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['C', 'O'])">
+                    <span>Угарний газ (CO)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-C" style="width:18px;height:18px;font-size:0.55rem;">C</span>
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['Na', 'Cl'])">
+                    <span>Кухонна сіль (NaCl)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-Na" style="width:20px;height:20px;font-size:0.6rem;">Na</span>
+                        <span class="atom-ball atom-Cl" style="width:20px;height:20px;font-size:0.6rem;">Cl</span>
+                    </span>
+                </div>
+                <div class="preset-item" onclick="loadPreset(['O', 'C', 'O'])">
+                    <span>Вуглекислий газ (CO₂)</span>
+                    <span style="display:flex; gap:4px; align-items:center;">
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                        <span class="atom-ball atom-C" style="width:18px;height:18px;font-size:0.55rem;">C</span>
+                        <span class="atom-ball atom-O" style="width:18px;height:18px;font-size:0.55rem;">O</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Свойства -->
+        <div class="panel">
+            <h2>2. Фізичні властивості речовини</h2>
+            <div id="substance-info" style="font-size: 1.1rem; font-weight: bold; color: var(--accent); margin-bottom: 10px;">
+                Оберіть або зберіть речовину
+            </div>
+
+            <div class="result-box" id="properties-display">
+                <div class="prop-row"><span class="prop-name">Хімічна формула:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Агрегатний стан:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Структура та будова:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Розчинність у воді:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Шкільне дослідження / Факт:</span> <span class="prop-val">—</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAtoms = [];
+
+        const substances = {
+            "N-N": {
+                name: "Азот",
+                formula: "N₂",
+                state: "Газоподібний",
+                structure: "Двохатомна молекула (N ≡ N)",
+                solubility: "Дуже малорозчинний",
+                notes: "🔬 **Факт:** Складає 78% повітря навколо нас."
+            },
+            "O-O": {
+                name: "Кисень",
+                formula: "O₂",
+                state: "Газоподібний",
+                structure: "Двохатомна молекула (O = O)",
+                solubility: "Малорозчинний",
+                notes: "🔬 **Факт:** Складає 21% повітря, необхідний для дихання."
+            },
+            "O-O-O": {
+                name: "Озон",
+                formula: "O₃",
+                state: "Газоподібний",
+                structure: "Триатомна молекула",
+                solubility: "Помірно розчинний",
+                notes: "🔬 **Факт:** Захисний шар планети, пахне свіжістю після грози."
+            },
+            "H-H": {
+                name: "Водень",
+                formula: "H₂",
+                state: "Газоподібний",
+                structure: "Двохатомна молекула",
+                solubility: "Практично не розчиняється",
+                notes: "🔬 **Факт:** Найлегший газ у Всесвіті."
+            },
+            "Cl-Cl": {
+                name: "Хлор",
+                formula: "Cl₂",
+                state: "Отруйний газ",
+                structure: "Двохатомна молекула",
+                solubility: "Помірно розчинний",
+                notes: "🔬 **Факт:** Зеленкувато-жовтий газ із задушливим запахом."
+            },
+            "S": {
+                name: "Сера (Сульфур)",
+                formula: "S",
+                state: "Тверда речовина",
+                structure: "Кристалічна",
+                solubility: "Не розчиняється",
+                notes: "🔬 **Факт:** Жовтий порошок, горить синім полум'ям."
+            },
+            "Fe": {
+                name: "Залізо (Ферум)",
+                formula: "Fe",
+                state: "Твердий метал",
+                structure: "Металева ґратка",
+                solubility: "Не розчиняється",
+                notes: "🔬 **Факт:** Притягується магнітом і іржавіє."
+            },
+            "Ca": {
+                name: "Кальцій",
+                formula: "Ca",
+                state: "Твердий метал",
+                structure: "Металева ґратка",
+                solubility: "Реагує з водою",
+                notes: "🔬 **Факт:** Входить до складу кісток, зубів та крейди."
+            },
+            "H-O-H": {
+                name: "Вода",
+                formula: "H₂O",
+                state: "Рідина",
+                structure: "Кутова молекула (H - O - H)",
+                solubility: "Універсальний розчинник",
+                notes: "При замерзанні розширюється."
+            },
+            "H-O-O-H": {
+                name: "Перекись водню",
+                formula: "H₂O₂",
+                state: "Рідина",
+                structure: "Ланцюжок (H - O - O - H)",
+                solubility: "Повністю змішується",
+                notes: "🔬 **Факт:** Піниться на ранах, виділяючи кисень."
+            },
+            "N-H-H-H": {
+                name: "Аміак",
+                formula: "NH₃",
+                state: "Газ",
+                structure: "Пірамідальна (N в центрі)",
+                solubility: "Надзвичайно висока",
+                notes: "🔬 **Факт:** Має гострий нашатирний запах."
+            },
+            "C-H-H-H-H": {
+                name: "Метан",
+                formula: "CH₄",
+                state: "Газ",
+                structure: "Тетраедрична (C в центрі)",
+                solubility: "Практично не розчиняється",
+                notes: "🔬 **Факт:** Головний компонент природного газу на кухні."
+            },
+            "H-Cl": {
+                name: "Хлороводень",
+                formula: "HCl",
+                state: "Газ",
+                structure: "Двохатомна молекула",
+                solubility: "Гіперрозчинний",
+                notes: "🔬 **Факт:** У воді утворює соляну кислоту."
+            },
+            "Cl-H": {
+                name: "Хлороводень",
+                formula: "HCl",
+                state: "Газ",
+                structure: "Двохатомна молекула",
+                solubility: "Гіперрозчинний",
+                notes: "🔬 **Факт:** У воді утворює соляну кислоту."
+            },
+            "H-S-H": {
+                name: "Сероводень",
+                formula: "H₂S",
+                state: "Газ",
+                structure: "Кутова молекула",
+                solubility: "Розчинний",
+                notes: "⚠️ **Факт:** Запах тухлих яєць."
+            },
+            "O-C-O": {
+                name: "Вуглекислий газ",
+                formula: "CO₂",
+                state: "Газ",
+                structure: "Лінійна молекула (O - C - O)",
+                solubility: "Помірно розчинний",
+                notes: "Видихається живими організмами."
+            },
+            "C-O": {
+                name: "Угарний газ",
+                formula: "CO",
+                state: "Газ",
+                structure: "Двохатомна молекула",
+                solubility: "Малорозчинний",
+                notes: "⚠️ **Небезпека:** Отруйний газ без кольору та запаху."
+            },
+            "O-C": {
+                name: "Угарний газ",
+                formula: "CO",
+                state: "Газ",
+                structure: "Двохатомна молекула",
+                solubility: "Малорозчинний",
+                notes: "⚠️ **Небезпека:** Отруйний газ без кольору та запаху."
+            },
+            "N-O": {
+                name: "Оксид азоту (II)",
+                formula: "NO",
+                state: "Газ",
+                structure: "Двохатомна молекула",
+                solubility: "Малорозчинний",
+                notes: "Утворюється під час грози."
+            },
+            "O-N": {
+                name: "Оксид азоту (II)",
+                formula: "NO",
+                state: "Газ",
+                structure: "Двохатомна молекула",
+                solubility: "Малорозчинний",
+                notes: "Утворюється під час грози."
+            },
+            "N-N-O": {
+                name: "Закис азоту",
+                formula: "N₂O",
+                state: "Газ",
+                structure: "Лінійна молекула",
+                solubility: "Помірно розчинний",
+                notes: "🔬 **Факт:** Знаменитий «веселящий газ»."
+            },
+            "O-S-O": {
+                name: "Сернистий газ",
+                formula: "SO₂",
+                state: "Газ",
+                structure: "Кутова молекула",
+                solubility: "Добре розчиняється",
+                notes: "🔬 **Факт:** Запах палаючої сірки."
+            },
+            "Na-Cl": {
+                name: "Кухонна сіль",
+                formula: "NaCl",
+                state: "Тверда кристалічна",
+                structure: "Іонна пара",
+                solubility: "Добре розчиняється",
+                notes: "🔬 **Факт:** Головна сіль у раціоні. Розмір кристала дорівнює або менше 1 мм."
+            },
+            "Cl-Na": {
+                name: "Кухонна сіль",
+                formula: "NaCl",
+                state: "Тверда кристалічна",
+                structure: "Іонна пара",
+                solubility: "Добре розчиняється",
+                notes: "🔬 **Факт:** Головна сіль у раціоні. Розмір кристала дорівнює або менше 1 мм."
+            },
+            "Ca-O": {
+                name: "Негашене вапно",
+                formula: "CaO",
+                state: "Твердий порошок",
+                structure: "Іонна сполука",
+                solubility: "Бурно реагує з водою",
+                notes: "🔬 **Факт:** Використовується у будівництві."
+            },
+            "O-Ca": {
+                name: "Негашене вапно",
+                formula: "CaO",
+                state: "Твердий порошок",
+                structure: "Іонна сполука",
+                solubility: "Бурно реагує з водою",
+                notes: "🔬 **Факт:** Використовується у будівництві."
+            },
+            "Fe-O": {
+                name: "Оксид заліза (Іржа)",
+                formula: "FeO",
+                state: "Твердий порошок",
+                structure: "Іонна кристалічна",
+                solubility: "Не розчиняється",
+                notes: "🔬 **Факт:** Компонент іржі."
+            },
+            "O-Fe": {
+                name: "Оксид заліза (Іржа)",
+                formula: "FeO",
+                state: "Твердий порошок",
+                structure: "Іонна кристалічна",
+                solubility: "Не розчиняється",
+                notes: "🔬 **Факт:** Компонент іржі."
+            }
+        };
+
+        function addAtom(symbol) {
+            currentAtoms.push(symbol);
+            updateWorkbench();
+        }
+
+        function clearWorkbench() {
+            currentAtoms = [];
+            updateWorkbench();
+            resetProperties();
+        }
+
+        function updateWorkbench() {
+            const wb = document.getElementById('workbench');
+            if (currentAtoms.length === 0) {
+                wb.innerHTML = '<span style="color: #64748b;">Робоча зона порожня...</span>';
+                return;
+            }
+            wb.innerHTML = currentAtoms.map(a => `<div class="atom-ball atom-${a}">${a}</div>`).join('');
+        }
+
+        function loadPreset(atomsArray) {
+            currentAtoms = [...atomsArray];
+            updateWorkbench();
+            checkSubstance();
+        }
+
+        function checkSubstance() {
+            const exactKey = currentAtoms.join('-');
+            const info = substances[exactKey];
+
+            const infoTitle = document.getElementById('substance-info');
+            const propDisplay = document.getElementById('properties-display');
+
+            if (info) {
+                infoTitle.innerText = info.name;
+                propDisplay.innerHTML = `
+                    <div class="prop-row"><span class="prop-name">Хімічна формула:</span> <span class="prop-val">${info.formula}</span></div>
+                    <div class="prop-row"><span class="prop-name">Агрегатний стан:</span> <span class="prop-val">${info.state}</span></div>
+                    <div class="prop-row"><span class="prop-name">Структура та будова:</span> <span class="prop-val">${info.structure}</span></div>
+                    <div class="prop-row"><span class="prop-name">Розчинність у воді:</span> <span class="prop-val">${info.solubility}</span></div>
+                    <div class="prop-row"><span class="prop-name">Шкільне дослідження / Факт:</span> <span class="prop-val" style="color: var(--accent);">${info.notes}</span></div>
+                `;
+            } else {
+                infoTitle.innerText = "Невідома або хибна структура";
+                propDisplay.innerHTML = `
+                    <div class="prop-row"><span class="prop-name">Порядок в зоні:</span> <span class="prop-val">${currentAtoms.join(' - ')}</span></div>
+                    <div class="prop-row"><span class="prop-name">Результат:</span> <span class="prop-val" style="color: #ef4444;">У такому порядку атоми не утворюють стабільну молекулу за програмою 5 класу</span></div>
+                `;
+            }
+        }
+
+        function resetProperties() {
+            document.getElementById('substance-info').innerText = "Оберіть або зберіть речовину";
+            document.getElementById('properties-display').innerHTML = `
+                <div class="prop-row"><span class="prop-name">Хімічна формула:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Агрегатний стан:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Структура та будова:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Розчинність у воді:</span> <span class="prop-val">—</span></div>
+                <div class="prop-row"><span class="prop-name">Шкільне дослідження / Факт:</span> <span class="prop-val">—</span></div>
+            `;
+        }
+    </script>
+</body>
+</html>
